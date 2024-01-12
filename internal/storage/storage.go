@@ -1,21 +1,17 @@
-package main
+package storage
 
 import (
-	"fmt"
-	"net/http"
+	"sync"
 
-	"github.com/go-chi/chi/v5"
+	"github.com/GalichAnton/go-rest-api-homework/internal/model"
 )
 
-// Task ...
-type Task struct {
-	ID           string   `json:"id"`
-	Description  string   `json:"description"`
-	Note         string   `json:"note"`
-	Applications []string `json:"applications"`
+type SyncMap struct {
+	Elems map[string]model.Task
+	M     sync.RWMutex
 }
 
-var tasks = map[string]Task{
+var Tasks = map[string]model.Task{
 	"1": {
 		ID:          "1",
 		Description: "Сделать финальное задание темы REST API",
@@ -39,17 +35,7 @@ var tasks = map[string]Task{
 	},
 }
 
-// Ниже напишите обработчики для каждого эндпоинта
-// ...
-
-func main() {
-	r := chi.NewRouter()
-
-	// здесь регистрируйте ваши обработчики
-	// ...
-
-	if err := http.ListenAndServe(":8080", r); err != nil {
-		fmt.Printf("Ошибка при запуске сервера: %s", err.Error())
-		return
-	}
+var TaskStorage = SyncMap{
+	Elems: Tasks,
+	M:     sync.RWMutex{},
 }
